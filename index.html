@@ -198,6 +198,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
       <button class="auth-tab" id="tabRegister" onclick="authMode('register')">Register</button>
     </div>
     <div class="auth-error" id="authError"></div>
+    <div class="auth-error" id="backendWarn" style="background:var(--amber-dim);color:#B45309"></div>
 
     <!-- LOGIN PANE -->
     <div class="auth-pane active" id="paneLogin">
@@ -438,7 +439,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 </div>
 
 <script>
-var DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbwzjGKDLarAlgrhL1m91EdQQH0yGJR-729pG5KmGfnBrksZp1Bf0UnWqLZDQPBMmmBQ/exec';
+var DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbw0QDuvt7uL2Ovyk1gnoNpGfMdgzX9HN2nDGhWOiss-GG6NL0eXkI_5YjMsP-lrNF4V/exec';
 var URL_KEY='pt_url', TOK_KEY='pt_token', USER_KEY='pt_user';
 function dataKey(){ return 'pt_data_' + (SESSION.user ? SESSION.user.username : 'anon'); }
 var SESSION = { url:DEFAULT_URL, token:'', user:null };
@@ -533,6 +534,12 @@ function authMode(m){
   document.getElementById('authSub').textContent=login?'Sign in to manage your money':'Track your money in a minute';
 }
 function authErr(msg){var e=document.getElementById('authError');e.textContent=msg;e.classList.add('show')}
+function checkBackend(){var w=document.getElementById('backendWarn');api('ping').then(function(r){
+  if(r&&r.success&&r.version==='v4'){w.classList.remove('show')}
+  else if(r&&r.success){w.textContent='⚠ Your backend is an OLD version ('+(r.version||'v3')+'). Register & Part-time need the v4 Code.gs. Redeploy it as a NEW VERSION, then reload.';w.classList.add('show')}
+  else{w.classList.remove('show')}
+})}
+function oldBackend(r){return r&&r.error&&String(r.error).indexOf('Unknown action')===0}
 
 var regPt='none';
 function regSetPt(v){regPt=v;document.querySelectorAll('#regPtSeg button').forEach(function(b){b.classList.toggle('on',b.dataset.pt===v)});document.getElementById('regPtOther').style.display=v==='generic'?'block':'none';document.getElementById('regPtRapidoHint').style.display=v==='rapido'?'block':'none'}
@@ -550,6 +557,7 @@ function doRegister(){
   api('register',{username:u,password:p,profile:profile}).then(function(r){
     btn.disabled=false;btn.textContent='Create Account';
     if(r&&r.success){SESSION.token=r.token;SESSION.user=r.user;localStorage.setItem(TOK_KEY,r.token);localStorage.setItem(USER_KEY,JSON.stringify(r.user));document.getElementById('regPass').value='';document.getElementById('regPass2').value='';enterApp();toast('Welcome, '+u+'!','success');}
+    else if(oldBackend(r)){checkBackend();authErr('Backend is outdated — redeploy Code.gs as a NEW VERSION to enable Register.');}
     else authErr((r&&r.error)||'Could not register.');
   });
 }
@@ -742,7 +750,7 @@ var ptModalVal='none';
 function openPtModal(){closeView('profile');var p=SESSION.user.profile||{partTime:'none',partTimeName:''};ptModalVal=p.partTime;document.querySelectorAll('#ptSeg button').forEach(function(b){b.classList.toggle('on',b.dataset.pt===ptModalVal)});document.getElementById('ptModalOther').style.display=ptModalVal==='generic'?'block':'none';document.getElementById('ptModalName').value=p.partTimeName||'';document.getElementById('ptModal').classList.add('open')}
 function ptModalSet(v){ptModalVal=v;document.querySelectorAll('#ptSeg button').forEach(function(b){b.classList.toggle('on',b.dataset.pt===v)});document.getElementById('ptModalOther').style.display=v==='generic'?'block':'none'}
 function savePt(){var name=ptModalVal==='generic'?document.getElementById('ptModalName').value.trim():'';if(ptModalVal==='generic'&&!name){toast('Enter the type of work','error');return}var profile={partTime:ptModalVal,partTimeName:name};
-  api('setProfile',{profile:profile}).then(function(r){if(r&&r.success){SESSION.user.profile=r.profile;localStorage.setItem(USER_KEY,JSON.stringify(SESSION.user));applyUserUI();closeModal('ptModal');toast('Saved!','success');renderActive()}else toast((r&&r.error)||'Failed','error')})}
+  api('setProfile',{profile:profile}).then(function(r){if(r&&r.success){SESSION.user.profile=r.profile;localStorage.setItem(USER_KEY,JSON.stringify(SESSION.user));applyUserUI();closeModal('ptModal');toast('Saved!','success');renderActive()}else if(oldBackend(r)){toast('Backend outdated — redeploy Code.gs (New version)','error')}else toast((r&&r.error)||'Failed','error')})}
 
 // ─── CHANGE PW ───
 function openChangePw(){closeView('profile');document.getElementById('pwOld').value='';document.getElementById('pwNew').value='';document.getElementById('pwConfirm').value='';document.getElementById('pwModal').classList.add('open')}
@@ -770,6 +778,7 @@ document.addEventListener('DOMContentLoaded',function(){
   SESSION.token=localStorage.getItem(TOK_KEY)||'';
   try{SESSION.user=JSON.parse(localStorage.getItem(USER_KEY)||'null')}catch(e){SESSION.user=null}
   if(SESSION.token&&SESSION.user){enterApp()}else{showAuth();authMode('login')}
+  checkBackend();
   ['loginUser','loginPass'].forEach(function(id){document.getElementById(id).addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()})});
   ['regUser','regPass','regPass2'].forEach(function(id){document.getElementById(id).addEventListener('keydown',function(e){if(e.key==='Enter'&&id==='regPass2')doRegister()})});
   document.querySelectorAll('.modal-overlay').forEach(function(m){m.addEventListener('click',function(e){if(e.target===this)m.classList.remove('open')});m.addEventListener('touchmove',function(e){if(e.target===this)e.preventDefault()},{passive:false})});
