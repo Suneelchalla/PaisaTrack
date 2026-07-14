@@ -484,12 +484,13 @@ function ptNet(list){var c=ptConfig();if(!c)return{earn:0,spend:0,net:0};var e=0
 // ─── helpers ───
 function fmt(n){var a=Math.abs(n);if(a>=100000)return'₹'+(a/100000).toFixed(a%100000===0?0:1)+'L';return'₹'+a.toLocaleString('en-IN',{maximumFractionDigits:2})}
 function fmtFull(n){return'₹'+Math.abs(n).toLocaleString('en-IN',{maximumFractionDigits:2})}
-function today(){return new Date().toISOString().split('T')[0]}
+function localYMD(d){var y=d.getFullYear(),m=('0'+(d.getMonth()+1)).slice(-2),da=('0'+d.getDate()).slice(-2);return y+'-'+m+'-'+da}
+function today(){return localYMD(new Date())}
 function nowLocal(){var d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16)}
 function weekStart(d){var t=new Date(d),day=t.getDay();t.setDate(t.getDate()-day+(day===0?-6:1));t.setHours(0,0,0,0);return t}
-function dateStr(ts){return new Date(ts).toISOString().split('T')[0]}
+function dateStr(ts){return localYMD(new Date(ts))}
 function timeStr(ts){return new Date(ts).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true})}
-function dayLabel(d){var t=today();if(d===t)return'Today';var y=new Date();y.setDate(y.getDate()-1);if(d===y.toISOString().split('T')[0])return'Yesterday';return new Date(d+'T00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',weekday:'short'})}
+function dayLabel(d){var t=today();if(d===t)return'Today';var y=new Date();y.setDate(y.getDate()-1);if(d===localYMD(y))return'Yesterday';return new Date(d+'T00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',weekday:'short'})}
 function monthLabel(y,m){return new Date(y,m).toLocaleDateString('en-IN',{month:'long',year:'numeric'})}
 function ordinal(n){var s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0])}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
