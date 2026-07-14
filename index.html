@@ -46,10 +46,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .auth-pane.active{display:block}
 .auth-error{display:none;background:var(--rose-dim);color:var(--rose);border-radius:var(--radius-sm);padding:10px 12px;font-size:13px;margin-bottom:14px;font-weight:500}
 .auth-error.show{display:block}
-.server-toggle{margin-top:16px;text-align:center}
-.server-toggle button{background:none;border:none;color:var(--faint);font-size:12px;font-family:inherit;cursor:pointer;text-decoration:underline}
-.server-box{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
-.server-box.open{display:block}
 .auth-foot{text-align:center;font-size:11px;color:var(--faint);padding:20px 0 30px}
 .seg{display:flex;gap:8px}
 .seg button{flex:1;padding:12px 8px;border:1px solid var(--border);background:var(--surface);border-radius:var(--radius-sm);color:var(--muted);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .15s}
@@ -229,14 +225,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
         <div id="regPtRapidoHint" class="hint" style="display:none">You'll get the full Rapido tab: log each order plus petrol, oil, repairs & servicing.</div>
       </div>
       <button class="btn-primary" id="regBtn" onclick="doRegister()">Create Account</button>
-    </div>
-
-    <div class="server-toggle"><button onclick="toggleServerBox()">⚙ Server settings</button></div>
-    <div class="server-box" id="serverBox">
-      <label class="form-label">Apps Script Web App URL</label>
-      <input type="url" class="form-input" id="serverUrl" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:12px">
-      <button class="btn-primary plain" style="margin-top:10px" onclick="saveServerUrl()">Save & Test</button>
-      <div id="serverStatus" style="font-size:12px;margin-top:8px;color:var(--muted)"></div>
     </div>
   </div>
   <div class="auth-foot">PaisaTrack v4 · Data stored in your Google Sheet</div>
@@ -534,7 +522,6 @@ function toast(m,t){t=t||'';var el=document.getElementById('toast');el.textConte
 // ─── AUTH UI ───
 function showAuth(){document.getElementById('screen-auth').classList.add('active');document.getElementById('screen-app').classList.remove('active')}
 function showApp(){document.getElementById('screen-auth').classList.remove('active');document.getElementById('screen-app').classList.add('active')}
-function toggleServerBox(){document.getElementById('serverBox').classList.toggle('open')}
 function authMode(m){
   document.getElementById('authError').classList.remove('show');
   var login=m==='login';
@@ -546,7 +533,6 @@ function authMode(m){
   document.getElementById('authSub').textContent=login?'Sign in to manage your money':'Track your money in a minute';
 }
 function authErr(msg){var e=document.getElementById('authError');e.textContent=msg;e.classList.add('show')}
-function saveServerUrl(){var u=document.getElementById('serverUrl').value.trim(),st=document.getElementById('serverStatus');if(!u.startsWith('https://script.google.com/')){st.innerHTML='<span style="color:var(--rose)">Invalid URL</span>';return}SESSION.url=u;localStorage.setItem(URL_KEY,u);st.innerHTML='Testing…';api('ping').then(function(r){st.innerHTML=r&&r.success?'<span style="color:var(--teal)">✓ Connected</span>':'<span style="color:var(--rose)">✗ No response (set access = Anyone)</span>'})}
 
 var regPt='none';
 function regSetPt(v){regPt=v;document.querySelectorAll('#regPtSeg button').forEach(function(b){b.classList.toggle('on',b.dataset.pt===v)});document.getElementById('regPtOther').style.display=v==='generic'?'block':'none';document.getElementById('regPtRapidoHint').style.display=v==='rapido'?'block':'none'}
@@ -783,7 +769,6 @@ document.addEventListener('DOMContentLoaded',function(){
   SESSION.url=localStorage.getItem(URL_KEY)||DEFAULT_URL;
   SESSION.token=localStorage.getItem(TOK_KEY)||'';
   try{SESSION.user=JSON.parse(localStorage.getItem(USER_KEY)||'null')}catch(e){SESSION.user=null}
-  document.getElementById('serverUrl').value=SESSION.url;
   if(SESSION.token&&SESSION.user){enterApp()}else{showAuth();authMode('login')}
   ['loginUser','loginPass'].forEach(function(id){document.getElementById(id).addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()})});
   ['regUser','regPass','regPass2'].forEach(function(id){document.getElementById(id).addEventListener('keydown',function(e){if(e.key==='Enter'&&id==='regPass2')doRegister()})});
