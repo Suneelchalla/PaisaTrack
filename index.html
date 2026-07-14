@@ -455,9 +455,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 
 <script>
 // ═══════════ CONFIG / STATE ═══════════
+// ↓↓↓ Your backend URL is built in here. Nothing else to configure.
+var DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbwzjGKDLarAlgrhL1m91EdQQH0yGJR-729pG5KmGfnBrksZp1Bf0UnWqLZDQPBMmmBQ/exec';
 var URL_KEY='pt_url', TOK_KEY='pt_token', USER_KEY='pt_user';
 function dataKey(){ return 'pt_data_' + (SESSION.user ? SESSION.user.username : 'anon'); }
-var SESSION = { url:'', token:'', user:null };
+var SESSION = { url:DEFAULT_URL, token:'', user:null };
 var APP = { settings:{initialBalance:0,salary:0,salaryDay:1}, transactions:[] };
 
 // ═══════════ CATEGORIES ═══════════
@@ -851,16 +853,15 @@ function closeModal(id){document.getElementById(id).classList.remove('open')}
 
 // ═══════════ INIT ═══════════
 document.addEventListener('DOMContentLoaded',function(){
-  SESSION.url=localStorage.getItem(URL_KEY)||'';
+  SESSION.url=localStorage.getItem(URL_KEY)||DEFAULT_URL;
   SESSION.token=localStorage.getItem(TOK_KEY)||'';
   try{SESSION.user=JSON.parse(localStorage.getItem(USER_KEY)||'null')}catch(e){SESSION.user=null}
   if(SESSION.url)document.getElementById('serverUrl').value=SESSION.url;
 
-  if(SESSION.token && SESSION.user && SESSION.url){
+  if(SESSION.token && SESSION.user){
     enterApp();
   } else {
     showLogin();
-    if(!SESSION.url)document.getElementById('serverBox').classList.add('open');
   }
 
   // enter key on login
