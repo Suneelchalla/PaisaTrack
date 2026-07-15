@@ -384,6 +384,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
       <button class="btn-primary plain" style="margin-top:6px" onclick="openBudgetModal()">＋ Set a Budget</button>
     </div>
 
+    <div class="section-title">Recurring Expenses</div>
+    <div class="card">
+      <div id="recurListSettings"></div>
+      <button class="btn-primary plain" style="margin-top:6px" onclick="openRecurModal()">＋ Add Recurring Expense</button>
+    </div>
+
     <div id="adminSection" style="display:none">
       <div class="section-title">Administration</div>
       <div class="card"><div class="list-row" onclick="openView('admin')"><div class="lr-left"><div class="lr-ic" style="background:var(--violet-dim)">👥</div><div class="lr-label">Manage Users</div></div><span class="chev">›</span></div></div>
@@ -494,6 +500,18 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
   <div class="form-group"><label class="form-label">Temporary Password</label><input type="text" class="form-input" id="nuPass" placeholder="they can change it later"></div>
   <div class="form-group"><label class="form-label">Role</label><select class="select-input" id="nuRole"><option value="user">User</option><option value="admin">Admin</option></select></div>
   <button class="btn-primary" id="userModalBtn" onclick="submitUser()">Create User</button>
+</div></div>
+
+<!-- RECURRING EXPENSE MODAL -->
+<div class="modal-overlay" id="recurModal"><div class="modal">
+  <div class="modal-header"><span class="modal-title" id="recurModalTitle">Add Recurring Expense</span><button class="modal-close" onclick="closeModal('recurModal')">×</button></div>
+  <div class="form-group"><label class="form-label">Category</label><select class="select-input" id="recurCat"></select></div>
+  <div class="form-group"><label class="form-label">Amount</label><div class="amount-wrap"><span class="cur">₹</span><input type="number" class="amount-input" id="recurAmount" placeholder="0" inputmode="decimal"></div></div>
+  <div class="form-group"><label class="form-label">Note</label><input type="text" class="form-input" id="recurNote" placeholder="e.g. Room rent, Jio recharge, Bike EMI"></div>
+  <div class="form-group"><label class="form-label">Day of Month (1–28)</label><input type="number" class="form-input" id="recurDay" placeholder="1" min="1" max="28" inputmode="numeric" style="font-size:18px;font-weight:700;text-align:center"></div>
+  <div class="hint" style="margin-top:-10px;margin-bottom:16px">Auto-logged on this date each month when you open the app.</div>
+  <button class="btn-primary" id="recurSaveBtn" onclick="recurSave()">Save</button>
+  <button class="btn-primary plain" id="recurDeleteBtn" onclick="recurDelete()" style="display:none;margin-top:10px;color:var(--rose);border-color:rgba(244,63,94,.3)">Remove This Recurring Expense</button>
 </div></div>
 
 <!-- QR ADD/EDIT MODAL -->
@@ -627,7 +645,7 @@ function loadLocal(){try{var r=localStorage.getItem(dataKey());if(r){var d=JSON.
 function fullSync(){setSync('syncing','Syncing…');return api('sync',{transactions:APP.transactions,settings:APP.settings}).then(function(r){
   if(r&&r.success){var ids={};r.transactions.forEach(function(x){ids[x.id]=1});var lo=APP.transactions.filter(function(x){return !ids[x.id]});APP.transactions=r.transactions.concat(lo);if(r.settings)APP.settings=r.settings;
     if(r.user){SESSION.user=r.user;localStorage.setItem(USER_KEY,JSON.stringify(r.user));applyUserUI()}
-    saveLocal();var now=new Date();localStorage.setItem('pt_lastsync',now.toISOString());setSync('online','Synced '+now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true}));updateLastSyncLabel();renderActive();
+    saveLocal();var now=new Date();localStorage.setItem('pt_lastsync',now.toISOString());setSync('online','Synced '+now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true}));updateLastSyncLabel();renderActive();autoLogRecurring();
   }else if(r&&String(r.error||'').indexOf('AUTH')===0){forceLogout('Session expired. Please log in again.');}else{setSync('error','Sync failed');}
   return r;});}
 function pushAdd(tx){if(!SESSION.token)return;setSync('syncing','Saving…');api('addTransaction',{tx:tx}).then(function(r){setSync(r&&r.success?'online':'error',r&&r.success?'Saved':'Saved locally')})}
@@ -780,6 +798,90 @@ function openBudgetModal(cat){budgetEditCat=cat||null;var sel=document.getElemen
 function saveBudget(){var cat=document.getElementById('budgetCat').value,amt=parseFloat(document.getElementById('budgetAmount').value)||0;if(amt<=0){toast('Enter a limit','error');return}APP.settings['budget_'+cat]=amt;saveLocal();pushSettings();closeModal('budgetModal');toast('Budget saved!','success');renderBudgetsSettings();renderHome()}
 function removeBudget(){if(!budgetEditCat)return;delete APP.settings['budget_'+budgetEditCat];saveLocal();pushSettings();closeModal('budgetModal');toast('Budget removed','error');renderBudgetsSettings();renderHome()}
 
+// ─── RECURRING EXPENSES ───
+function getRecurring(){try{var r=APP.settings.recurring;if(typeof r==='string')r=JSON.parse(r);return Array.isArray(r)?r:[]}catch(e){return[]}}
+function setRecurring(list){APP.settings.recurring=JSON.stringify(list);saveLocal();pushSettings()}
+
+function renderRecurSettings(){
+  var list=getRecurring(),c=document.getElementById('recurListSettings');
+  if(!list.length){c.innerHTML='<div style="font-size:13px;color:var(--muted);padding:4px 0 10px">No recurring expenses set. Add rent, EMI, recharge — they\'ll auto-log each month.</div>';return}
+  c.innerHTML=list.map(function(r){var ci=catInfo(r.category);
+    var statusTxt='';var now=new Date(),ym=now.getFullYear()+'-'+('0'+(now.getMonth()+1)).slice(-2);
+    if(r.lastLogged===ym)statusTxt='<span style="font-size:10px;color:var(--teal);font-weight:700"> ✓ Logged</span>';
+    else if(now.getDate()>=r.day)statusTxt='<span style="font-size:10px;color:var(--amber);font-weight:700"> Pending</span>';
+    else statusTxt='<span style="font-size:10px;color:var(--faint)"> '+ordinal(r.day)+'</span>';
+    return '<div class="list-row" onclick="openRecurModal(\''+r.id+'\')"><div class="lr-left"><div class="lr-ic">'+ci.emoji+'</div><div class="lr-label">'+esc(r.note||ci.label)+statusTxt+'</div></div><div><span class="lr-val">'+fmtFull(r.amount)+'/mo</span> <span class="chev">›</span></div></div>'
+  }).join('');
+}
+
+var recurEditId=null;
+function openRecurModal(id){
+  recurEditId=id||null;
+  var sel=document.getElementById('recurCat');
+  // include both expense and income categories
+  sel.innerHTML='<optgroup label="Expenses">'+catsFor('expense').map(function(c){return '<option value="'+c.id+'">'+c.emoji+' '+c.label+'</option>'}).join('')+'</optgroup><optgroup label="Income">'+catsFor('income').map(function(c){return '<option value="'+c.id+'">'+c.emoji+' '+c.label+'</option>'}).join('')+'</optgroup>';
+  if(id){
+    var r=getRecurring().find(function(x){return x.id===id});
+    if(!r)return;
+    document.getElementById('recurModalTitle').textContent='Edit Recurring Expense';
+    sel.value=r.category;
+    document.getElementById('recurAmount').value=r.amount;
+    document.getElementById('recurNote').value=r.note||'';
+    document.getElementById('recurDay').value=r.day;
+    document.getElementById('recurDeleteBtn').style.display='block';
+    document.getElementById('recurSaveBtn').textContent='Update';
+  }else{
+    document.getElementById('recurModalTitle').textContent='Add Recurring Expense';
+    document.getElementById('recurAmount').value='';
+    document.getElementById('recurNote').value='';
+    document.getElementById('recurDay').value='1';
+    document.getElementById('recurDeleteBtn').style.display='none';
+    document.getElementById('recurSaveBtn').textContent='Save';
+  }
+  document.getElementById('recurModal').classList.add('open');
+}
+function recurSave(){
+  var cat=document.getElementById('recurCat').value;
+  var amt=parseFloat(document.getElementById('recurAmount').value);
+  var note=document.getElementById('recurNote').value.trim();
+  var day=parseInt(document.getElementById('recurDay').value)||1;
+  if(!amt||amt<=0){toast('Enter an amount','error');return}
+  if(day<1||day>28){toast('Day must be 1–28','error');return}
+  var list=getRecurring();
+  if(recurEditId){
+    var r=list.find(function(x){return x.id===recurEditId});
+    if(r){r.category=cat;r.amount=amt;r.note=note;r.day=day}
+  }else{
+    list.push({id:uid(),category:cat,amount:amt,note:note,day:day,lastLogged:''});
+  }
+  setRecurring(list);closeModal('recurModal');toast('Saved!','success');renderRecurSettings();
+}
+function recurDelete(){
+  if(!recurEditId)return;
+  if(!confirm('Remove this recurring expense?'))return;
+  var list=getRecurring().filter(function(x){return x.id!==recurEditId});
+  setRecurring(list);closeModal('recurModal');toast('Removed','error');renderRecurSettings();
+}
+
+// Auto-log recurring expenses on app open
+function autoLogRecurring(){
+  var list=getRecurring(),now=new Date(),ym=now.getFullYear()+'-'+('0'+(now.getMonth()+1)).slice(-2);
+  var logged=0,changed=false;
+  list.forEach(function(r){
+    if(r.lastLogged===ym)return; // already logged this month
+    if(now.getDate()<r.day)return; // not yet due
+    // auto-create the transaction
+    var type=CATS.income.find(function(c){return c.id===r.category})?'income':'expense';
+    var logDate=new Date(now.getFullYear(),now.getMonth(),r.day,9,0,0);
+    var tx={id:uid(),userId:SESSION.user.username,type:type,category:r.category,amount:r.amount,note:(r.note||'')+' (auto)',timestamp:logDate.getTime()};
+    APP.transactions.push(tx);pushAdd(tx);
+    r.lastLogged=ym;logged++;changed=true;
+  });
+  if(changed){setRecurring(list);saveLocal();renderActive()}
+  if(logged===1)toast('1 recurring expense auto-logged','success');
+  else if(logged>1)toast(logged+' recurring expenses auto-logged','success');
+}
+
 // ─── CHARTS ───
 function renderTrend(){var el=document.getElementById('trendChart'),months=[],now=new Date();for(var i=5;i>=0;i--)months.push(new Date(now.getFullYear(),now.getMonth()-i,1));
   var data=months.map(function(d){return{label:d.toLocaleDateString('en-IN',{month:'short'}),inc:sum(filt({month:d.getMonth(),year:d.getFullYear(),type:'income'})),exp:sum(filt({month:d.getMonth(),year:d.getFullYear(),type:'expense'}))}});
@@ -856,7 +958,7 @@ function renderHistory(){document.getElementById('histLabel').textContent=monthL
 
 // ─── SETTINGS ───
 var editK='';
-function renderSettings(){document.getElementById('setBalance').textContent=fmtFull(APP.settings.initialBalance);document.getElementById('setSalary').textContent=fmtFull(APP.settings.salary);document.getElementById('setSalaryDay').textContent=ordinal(APP.settings.salaryDay);document.getElementById('setTxCount').textContent=APP.transactions.length;renderBudgetsSettings();updateLastSyncLabel();var c=ptConfig();document.getElementById('setPt').textContent=c?c.label:'None'}
+function renderSettings(){document.getElementById('setBalance').textContent=fmtFull(APP.settings.initialBalance);document.getElementById('setSalary').textContent=fmtFull(APP.settings.salary);document.getElementById('setSalaryDay').textContent=ordinal(APP.settings.salaryDay);document.getElementById('setTxCount').textContent=APP.transactions.length;renderBudgetsSettings();renderRecurSettings();updateLastSyncLabel();var c=ptConfig();document.getElementById('setPt').textContent=c?c.label:'None'}
 function editSetting(k){editK=k;var ti=document.getElementById('setTitle'),la=document.getElementById('setLabel'),inp=document.getElementById('setInput'),cu=document.getElementById('setCur');
   if(k==='balance'){ti.textContent='Initial Balance';la.textContent='Total amount you currently have';inp.value=APP.settings.initialBalance||'';cu.style.display=''}
   else if(k==='salary'){ti.textContent='Monthly Salary';la.textContent='Your monthly salary amount';inp.value=APP.settings.salary||'';cu.style.display=''}
