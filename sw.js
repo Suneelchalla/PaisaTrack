@@ -1,5 +1,5 @@
 // PaisaTrack service worker — network-first for the app so updates apply immediately
-var CACHE = 'paisatrack-v5';
+var CACHE = 'paisatrack-v6';
 var SHELL = ['./','./index.html','./manifest.json','./icon-192.png','./icon-512.png','./apple-touch-icon.png','./favicon.ico'];
 self.addEventListener('install', function(e){
   self.skipWaiting();
