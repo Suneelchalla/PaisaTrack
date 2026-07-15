@@ -1,12 +1,10 @@
 // PaisaTrack service worker — network-first for the app so updates apply immediately
-var CACHE = 'paisatrack-v4';
+var CACHE = 'paisatrack-v5';
 var SHELL = ['./','./index.html','./manifest.json','./icon-192.png','./icon-512.png','./apple-touch-icon.png','./favicon.ico'];
-
 self.addEventListener('install', function(e){
   self.skipWaiting();
   e.waitUntil(caches.open(CACHE).then(function(c){ return c.addAll(SHELL).catch(function(){}); }));
 });
-
 self.addEventListener('activate', function(e){
   e.waitUntil(
     caches.keys().then(function(keys){
@@ -14,7 +12,6 @@ self.addEventListener('activate', function(e){
     }).then(function(){ return self.clients.claim(); })
   );
 });
-
 self.addEventListener('fetch', function(e){
   var req = e.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
