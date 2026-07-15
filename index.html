@@ -180,6 +180,54 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .toast.show{transform:translateX(-50%) translateY(0)}.toast.error{background:var(--rose)}.toast.success{background:var(--teal)}
 .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* ═══ QR PAY TAB ═══ */
+.qr-hero{background:linear-gradient(135deg,#10B981,#10B981 40%,#0EA5E9);border-radius:22px;padding:22px;margin:6px 0 16px;color:#fff;box-shadow:var(--shadow-lg);position:relative;overflow:hidden}
+.qr-hero .emoji-bg{position:absolute;right:16px;top:14px;font-size:40px;opacity:.25}
+.qr-hero .lbl{font-size:12px;opacity:.9;text-transform:uppercase;letter-spacing:1px}
+.qr-hero .hint{font-size:13px;opacity:.85;margin-top:4px;color:#fff}
+.qr-cards{display:flex;flex-direction:column;gap:12px}
+.qr-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;cursor:pointer;transition:transform .12s;-webkit-tap-highlight-color:transparent}
+.qr-card:active{transform:scale(.98)}
+.qr-card-inner{display:flex;align-items:center;gap:14px;padding:14px 16px}
+.qr-thumb{width:64px;height:64px;border-radius:12px;background:var(--surface-2);border:1px solid var(--border);object-fit:cover;flex-shrink:0}
+.qr-card-info{flex:1;min-width:0}
+.qr-card-name{font-size:16px;font-weight:700;color:var(--ink)}
+.qr-card-upi{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qr-card-actions{display:flex;gap:6px;flex-shrink:0}
+.qr-card-actions button{width:34px;height:34px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--muted);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.qr-add-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:18px;border-radius:var(--radius);border:2px dashed var(--border);background:transparent;color:var(--muted);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .15s;width:100%;margin-top:4px}
+.qr-add-btn:active{background:var(--surface-2)}
+
+/* QR fullscreen overlay */
+.qr-fullscreen{position:fixed;inset:0;background:#ffffff;z-index:300;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;padding-bottom:calc(20px + var(--safe-bottom))}
+.qr-fullscreen.open{display:flex}
+.qr-fs-close{position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:50%;background:var(--surface-3);border:1px solid var(--border);color:var(--ink);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2}
+.qr-fs-image{max-width:min(320px,80vw);max-height:min(320px,45vh);border-radius:16px;object-fit:contain;box-shadow:0 4px 30px rgba(0,0,0,.08)}
+.qr-fs-label{font-size:22px;font-weight:800;color:var(--ink);margin-top:18px;text-align:center}
+.qr-fs-upi{font-size:13px;color:var(--muted);margin-top:4px}
+.qr-fs-amount-section{margin-top:24px;width:100%;max-width:300px;text-align:center}
+.qr-fs-amount-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.qr-fs-amount-input{flex:1;padding:12px 12px 12px 32px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--ink);font-size:22px;font-weight:700;font-family:inherit;outline:none;text-align:center;font-variant-numeric:tabular-nums}
+.qr-fs-amount-input:focus{border-color:var(--teal);background:#fff}
+.qr-fs-amount-wrap{position:relative;flex:1}
+.qr-fs-amount-wrap .cur{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:16px;font-weight:700;color:var(--muted)}
+.qr-fs-log-btn{width:100%;padding:14px;border:none;border-radius:var(--radius);background:var(--teal);color:#fff;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:var(--shadow);transition:transform .12s}
+.qr-fs-log-btn:active{transform:scale(.97)}
+.qr-fs-log-btn:disabled{opacity:.5}
+.qr-fs-skip{margin-top:10px;background:none;border:none;color:var(--muted);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;padding:8px}
+
+/* Crop overlay */
+.crop-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:350;display:none;flex-direction:column}
+.crop-overlay.open{display:flex}
+.crop-top-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;flex-shrink:0}
+.crop-top-bar span{color:#fff;font-size:16px;font-weight:700}
+.crop-top-btn{padding:8px 18px;border-radius:8px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer}
+.crop-cancel{background:rgba(255,255,255,.15);color:#fff}
+.crop-done{background:var(--teal);color:#fff}
+.crop-canvas-wrap{flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.crop-canvas-wrap canvas{max-width:100%;max-height:100%;display:block}
+.crop-hint{text-align:center;padding:10px;color:rgba(255,255,255,.6);font-size:12px;flex-shrink:0;padding-bottom:calc(12px + var(--safe-bottom))}
 </style>
 </head>
 <body>
@@ -266,6 +314,18 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
     <div class="card"><div id="trendChart"></div></div>
     <div class="section-title">Recent Transactions</div>
     <div class="card" style="padding:4px 16px"><div id="recentTx"></div></div>
+  </div>
+
+  <!-- QR PAY -->
+  <div id="view-qr" class="view">
+    <div class="qr-hero">
+      <div class="emoji-bg">📱</div>
+      <div class="lbl">QR Pay</div>
+      <div class="hint">Show your QR, collect payment, log it — all in one place.</div>
+    </div>
+    <div class="section-title">Your Payment QR Codes</div>
+    <div class="qr-cards" id="qrCardList"></div>
+    <button class="qr-add-btn" onclick="openQrAdd()">＋ Add Payment QR</button>
   </div>
 
   <!-- PART-TIME (rapido or generic) -->
@@ -374,6 +434,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
   <button class="fab" onclick="openAdd()">＋</button>
   <nav class="bottom-nav">
     <button class="nav-btn active" id="navHome" onclick="tab('home',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</button>
+    <button class="nav-btn" id="navQR" onclick="tab('qr',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="3" height="3"/><line x1="21" y1="14" x2="21" y2="14.01"/><line x1="21" y1="21" x2="21" y2="21.01"/><line x1="17" y1="21" x2="17" y2="21.01"/><line x1="21" y1="17.5" x2="21" y2="17.5"/></svg>QR Pay</button>
     <button class="nav-btn" id="navPT" onclick="tab('pt',this)" style="display:none"><span class="emoji-ic">🏍️</span><span id="navPTLabel">Rapido</span></button>
     <button class="nav-btn" id="navHistory" onclick="tab('history',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>History</button>
     <button class="nav-btn" id="navSettings" onclick="tab('settings',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.32 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings</button>
@@ -435,6 +496,62 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
   <button class="btn-primary" id="userModalBtn" onclick="submitUser()">Create User</button>
 </div></div>
 
+<!-- QR ADD/EDIT MODAL -->
+<div class="modal-overlay" id="qrModal"><div class="modal">
+  <div class="modal-header"><span class="modal-title" id="qrModalTitle">Add Payment QR</span><button class="modal-close" onclick="closeModal('qrModal')">×</button></div>
+  <div class="form-group">
+    <label class="form-label">Payment App</label>
+    <div class="seg" id="qrAppSeg" style="flex-wrap:wrap">
+      <button type="button" data-app="Paytm" onclick="qrSelectApp('Paytm')">Paytm</button>
+      <button type="button" data-app="GPay" onclick="qrSelectApp('GPay')">GPay</button>
+      <button type="button" data-app="PhonePe" onclick="qrSelectApp('PhonePe')">PhonePe</button>
+      <button type="button" data-app="Other" onclick="qrSelectApp('Other')">Other</button>
+    </div>
+    <div id="qrCustomAppWrap" style="display:none;margin-top:10px"><input type="text" class="form-input" id="qrCustomApp" placeholder="App name, e.g. Amazon Pay"></div>
+  </div>
+  <div class="form-group"><label class="form-label">UPI ID (optional)</label><input type="text" class="form-input" id="qrUpi" placeholder="e.g. yourname@paytm"></div>
+  <div class="form-group">
+    <label class="form-label">QR Image</label>
+    <div id="qrPreviewWrap" style="display:none;text-align:center;margin-bottom:12px">
+      <img id="qrPreviewImg" style="max-width:180px;max-height:180px;border-radius:12px;border:1px solid var(--border)">
+      <div style="margin-top:8px"><button class="chip-btn" onclick="qrPickImage()">Change Image</button> <button class="chip-btn" onclick="qrCropStart()">Crop</button></div>
+    </div>
+    <button class="btn-primary plain" id="qrPickBtn" onclick="qrPickImage()">📷 Choose from Gallery</button>
+    <input type="file" id="qrFileInput" accept="image/*" style="display:none" onchange="qrFileSelected(event)">
+    <div class="hint">Pick a screenshot of your payment QR from your gallery. You can crop it after.</div>
+  </div>
+  <button class="btn-primary" id="qrSaveBtn" onclick="qrSave()">Save QR</button>
+  <button class="btn-primary plain" id="qrDeleteBtn" onclick="qrDelete()" style="display:none;margin-top:10px;color:var(--rose);border-color:rgba(244,63,94,.3)">Remove This QR</button>
+</div></div>
+
+<!-- QR FULLSCREEN -->
+<div class="qr-fullscreen" id="qrFullscreen">
+  <button class="qr-fs-close" onclick="qrCloseFullscreen()">×</button>
+  <img id="qrFsImage" class="qr-fs-image">
+  <div class="qr-fs-label" id="qrFsLabel">Paytm</div>
+  <div class="qr-fs-upi" id="qrFsUpi"></div>
+  <div class="qr-fs-amount-section" id="qrFsAmountSection">
+    <div class="qr-fs-amount-row">
+      <div class="qr-fs-amount-wrap"><span class="cur">₹</span><input type="number" class="qr-fs-amount-input" id="qrFsAmount" placeholder="0" inputmode="decimal"></div>
+    </div>
+    <button class="qr-fs-log-btn" id="qrFsLogBtn" onclick="qrLogPayment()">✓ Payment Received</button>
+    <button class="qr-fs-skip" onclick="qrCloseFullscreen()">Close without logging</button>
+  </div>
+</div>
+
+<!-- CROP OVERLAY -->
+<div class="crop-overlay" id="cropOverlay">
+  <div class="crop-top-bar">
+    <button class="crop-top-btn crop-cancel" onclick="cropCancel()">Cancel</button>
+    <span>Crop QR</span>
+    <button class="crop-top-btn crop-done" onclick="cropDone()">Done</button>
+  </div>
+  <div class="crop-canvas-wrap" id="cropWrap">
+    <canvas id="cropCanvas"></canvas>
+  </div>
+  <div class="crop-hint">Drag to select the QR code area</div>
+</div>
+
 <div class="toast" id="toast"></div>
 </div>
 
@@ -442,6 +559,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 var DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbw0QDuvt7uL2Ovyk1gnoNpGfMdgzX9HN2nDGhWOiss-GG6NL0eXkI_5YjMsP-lrNF4V/exec';
 var URL_KEY='pt_url', TOK_KEY='pt_token', USER_KEY='pt_user';
 function dataKey(){ return 'pt_data_' + (SESSION.user ? SESSION.user.username : 'anon'); }
+function qrKey(){ return 'pt_qrcodes_' + (SESSION.user ? SESSION.user.username : 'anon'); }
 var SESSION = { url:DEFAULT_URL, token:'', user:null };
 var APP = { settings:{initialBalance:0,salary:0,salaryDay:1}, transactions:[] };
 
@@ -593,20 +711,21 @@ function applyUserUI(){
     document.getElementById('filterPT').style.display='';document.getElementById('filterPT').textContent=c.label;
     document.getElementById('profilePt').textContent='Part-time: '+c.label;
     document.getElementById('setPt').textContent=c.label;
+    // show quick-log section on QR fullscreen only for PT users
+    document.getElementById('qrFsAmountSection').style.display='';
   }else{navPT.style.display='none';document.getElementById('filterPT').style.display='none';document.getElementById('profilePt').textContent='No part-time work set';document.getElementById('setPt').textContent='None';
-    // if currently on pt view, go home
     if(document.getElementById('view-pt').classList.contains('active'))tab('home',document.getElementById('navHome'));
   }
   renderQuick();
 }
 
 // ─── NAV ───
-function tab(n,btn){document.querySelectorAll('#screen-app .view').forEach(function(v){v.classList.remove('active')});document.getElementById('view-'+n).classList.add('active');document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active')});if(btn)btn.classList.add('active');var av=document.querySelector('#screen-app .view.active');if(av)av.scrollTop=0;render(n)}
+function tab(n,btn){document.querySelectorAll('#screen-app > .view').forEach(function(v){v.classList.remove('active')});document.getElementById('view-'+n).classList.add('active');document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active')});if(btn)btn.classList.add('active');var av=document.querySelector('#screen-app > .view.active');if(av)av.scrollTop=0;render(n)}
 function openView(n){document.getElementById('view-'+n).classList.add('active');if(n==='admin')loadUsers()}
 function closeView(n){document.getElementById('view-'+n).classList.remove('active')}
-function activeTab(){var v=document.querySelector('#screen-app .view.active');return v?v.id.replace('view-',''):'home'}
+function activeTab(){var v=document.querySelector('#screen-app > .view.active');return v?v.id.replace('view-',''):'home'}
 function renderActive(){render(activeTab())}
-function render(n){if(n==='home')renderHome();else if(n==='pt')renderPT();else if(n==='history')renderHistory();else if(n==='settings')renderSettings()}
+function render(n){if(n==='home')renderHome();else if(n==='qr')renderQR();else if(n==='pt')renderPT();else if(n==='history')renderHistory();else if(n==='settings')renderSettings()}
 function renderAll(){renderHome();renderSettings()}
 
 // ─── quick actions ───
@@ -772,6 +891,216 @@ function openCreateUser(){document.getElementById('nuUser').value='';document.ge
 function submitUser(){var u=document.getElementById('nuUser').value.trim(),p=document.getElementById('nuPass').value,role=document.getElementById('nuRole').value,btn=document.getElementById('userModalBtn');if(!u||!p){toast('Fill username and password','error');return}if(p.length<4){toast('Password too short','error');return}btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Creating…';api('createUser',{username:u,password:p,role:role}).then(function(r){btn.disabled=false;btn.textContent='Create User';if(r&&r.success){toast('User "'+u+'" created!','success');closeModal('userModal');loadUsers()}else toast((r&&r.error)||'Failed','error')})}
 
 function closeModal(id){document.getElementById(id).classList.remove('open')}
+
+// ═══════════════════════════════════════
+// QR PAY FEATURE
+// ═══════════════════════════════════════
+var qrCodes = []; // {id, app, upi, image (base64)}
+var qrEditId = null;
+var qrSelectedApp = '';
+var qrImageData = null; // base64 string of current image
+var qrOriginalImage = null; // uncropped original for re-crop
+
+function loadQR(){try{var r=localStorage.getItem(qrKey());if(r)qrCodes=JSON.parse(r);else qrCodes=[]}catch(e){qrCodes=[]}}
+function saveQR(){try{localStorage.setItem(qrKey(),JSON.stringify(qrCodes))}catch(e){toast('Storage full — try removing a QR','error')}}
+
+function renderQR(){
+  loadQR();
+  var c=document.getElementById('qrCardList');
+  if(!qrCodes.length){
+    c.innerHTML=emptyHTML('📱','No payment QR codes yet. Add your Paytm, GPay, or PhonePe QR to collect payments fast.');
+    return;
+  }
+  c.innerHTML=qrCodes.map(function(q){
+    return '<div class="qr-card">'+
+      '<div class="qr-card-inner" onclick="qrOpenFullscreen(\''+q.id+'\')">'+
+        '<img class="qr-thumb" src="'+q.image+'" alt="QR">'+
+        '<div class="qr-card-info"><div class="qr-card-name">'+esc(q.app)+'</div>'+(q.upi?'<div class="qr-card-upi">'+esc(q.upi)+'</div>':'')+'</div>'+
+        '<div class="qr-card-actions">'+
+          '<button onclick="event.stopPropagation();qrEdit(\''+q.id+'\')" title="Edit">✏️</button>'+
+        '</div>'+
+      '</div></div>';
+  }).join('');
+}
+
+// ─── QR Add/Edit Modal ───
+function openQrAdd(){
+  qrEditId=null;qrSelectedApp='';qrImageData=null;qrOriginalImage=null;
+  document.getElementById('qrModalTitle').textContent='Add Payment QR';
+  document.getElementById('qrSaveBtn').textContent='Save QR';
+  document.getElementById('qrDeleteBtn').style.display='none';
+  document.getElementById('qrUpi').value='';
+  document.getElementById('qrPreviewWrap').style.display='none';
+  document.getElementById('qrPickBtn').style.display='';
+  document.getElementById('qrCustomApp').value='';
+  document.getElementById('qrCustomAppWrap').style.display='none';
+  document.querySelectorAll('#qrAppSeg button').forEach(function(b){b.classList.remove('on')});
+  document.getElementById('qrModal').classList.add('open');
+}
+function qrEdit(id){
+  var q=qrCodes.find(function(x){return x.id===id});if(!q)return;
+  qrEditId=id;qrImageData=q.image;qrOriginalImage=q.originalImage||q.image;
+  document.getElementById('qrModalTitle').textContent='Edit QR';
+  document.getElementById('qrSaveBtn').textContent='Update QR';
+  document.getElementById('qrDeleteBtn').style.display='block';
+  document.getElementById('qrUpi').value=q.upi||'';
+  document.getElementById('qrPreviewWrap').style.display='block';
+  document.getElementById('qrPreviewImg').src=q.image;
+  document.getElementById('qrPickBtn').style.display='none';
+  // set app selector
+  var stdApps=['Paytm','GPay','PhonePe','Other'];
+  var isStd=stdApps.indexOf(q.app)>-1;
+  qrSelectedApp=isStd?q.app:'Other';
+  document.querySelectorAll('#qrAppSeg button').forEach(function(b){b.classList.toggle('on',b.dataset.app===qrSelectedApp)});
+  if(!isStd){document.getElementById('qrCustomAppWrap').style.display='block';document.getElementById('qrCustomApp').value=q.app}
+  else{document.getElementById('qrCustomAppWrap').style.display='none';document.getElementById('qrCustomApp').value=''}
+  document.getElementById('qrModal').classList.add('open');
+}
+function qrSelectApp(app){
+  qrSelectedApp=app;
+  document.querySelectorAll('#qrAppSeg button').forEach(function(b){b.classList.toggle('on',b.dataset.app===app)});
+  document.getElementById('qrCustomAppWrap').style.display=app==='Other'?'block':'none';
+}
+function qrPickImage(){document.getElementById('qrFileInput').click()}
+function qrFileSelected(e){
+  var file=e.target.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    qrImageData=ev.target.result;
+    qrOriginalImage=ev.target.result;
+    document.getElementById('qrPreviewImg').src=qrImageData;
+    document.getElementById('qrPreviewWrap').style.display='block';
+    document.getElementById('qrPickBtn').style.display='none';
+  };
+  reader.readAsDataURL(file);
+  e.target.value=''; // reset so same file can be re-picked
+}
+function qrSave(){
+  var appName=qrSelectedApp==='Other'?document.getElementById('qrCustomApp').value.trim():qrSelectedApp;
+  if(!appName){toast('Pick a payment app','error');return}
+  if(!qrImageData){toast('Add a QR image','error');return}
+  var upi=document.getElementById('qrUpi').value.trim();
+  if(qrEditId){
+    var q=qrCodes.find(function(x){return x.id===qrEditId});
+    if(q){q.app=appName;q.upi=upi;q.image=qrImageData;q.originalImage=qrOriginalImage||qrImageData}
+  }else{
+    qrCodes.push({id:uid(),app:appName,upi:upi,image:qrImageData,originalImage:qrOriginalImage||qrImageData});
+  }
+  saveQR();closeModal('qrModal');toast('QR saved!','success');renderQR();
+}
+function qrDelete(){
+  if(!qrEditId)return;
+  if(!confirm('Remove this QR code?'))return;
+  qrCodes=qrCodes.filter(function(x){return x.id!==qrEditId});
+  saveQR();closeModal('qrModal');toast('QR removed','error');renderQR();
+}
+
+// ─── QR Fullscreen ───
+var qrFsCurrentId=null;
+function qrOpenFullscreen(id){
+  var q=qrCodes.find(function(x){return x.id===id});if(!q)return;
+  qrFsCurrentId=id;
+  document.getElementById('qrFsImage').src=q.image;
+  document.getElementById('qrFsLabel').textContent=q.app;
+  document.getElementById('qrFsUpi').textContent=q.upi||'';
+  document.getElementById('qrFsAmount').value='';
+  // show log section only for PT users
+  var c=ptConfig();
+  document.getElementById('qrFsAmountSection').style.display=c?'':'none';
+  document.getElementById('qrFullscreen').classList.add('open');
+}
+function qrCloseFullscreen(){document.getElementById('qrFullscreen').classList.remove('open');qrFsCurrentId=null}
+function qrLogPayment(){
+  var amt=parseFloat(document.getElementById('qrFsAmount').value);
+  if(!amt||amt<=0){toast('Enter the amount received','error');return}
+  var c=ptConfig();
+  var cat=c?c.incomeCat:'other_income';
+  var tx={id:uid(),userId:SESSION.user.username,type:'income',category:cat,amount:amt,note:'QR payment',timestamp:Date.now()};
+  APP.transactions.push(tx);saveLocal();pushAdd(tx);
+  toast('+'+fmtFull(amt)+' logged!','success');
+  qrCloseFullscreen();renderActive();
+}
+
+// ─── CROP ───
+var cropImg=new Image(),cropRect={x:0,y:0,w:0,h:0},cropDragging=false,cropStart={x:0,y:0};
+var cropScale=1,cropOffX=0,cropOffY=0;
+
+function qrCropStart(){
+  if(!qrOriginalImage&&!qrImageData)return;
+  cropImg.onload=function(){
+    var c=document.getElementById('cropCanvas'),wrap=document.getElementById('cropWrap');
+    var maxW=wrap.clientWidth||window.innerWidth;
+    var maxH=wrap.clientHeight||(window.innerHeight-120);
+    cropScale=Math.min(maxW/cropImg.width,maxH/cropImg.height,1);
+    c.width=Math.round(cropImg.width*cropScale);
+    c.height=Math.round(cropImg.height*cropScale);
+    cropRect={x:0,y:0,w:0,h:0};
+    cropDraw();
+    document.getElementById('cropOverlay').classList.add('open');
+  };
+  cropImg.src=qrOriginalImage||qrImageData;
+}
+
+function cropDraw(){
+  var c=document.getElementById('cropCanvas'),ctx=c.getContext('2d');
+  ctx.clearRect(0,0,c.width,c.height);
+  ctx.drawImage(cropImg,0,0,c.width,c.height);
+  if(cropRect.w>5&&cropRect.h>5){
+    // dim outside
+    ctx.fillStyle='rgba(0,0,0,0.55)';
+    ctx.fillRect(0,0,c.width,cropRect.y);
+    ctx.fillRect(0,cropRect.y,cropRect.x,cropRect.h);
+    ctx.fillRect(cropRect.x+cropRect.w,cropRect.y,c.width-cropRect.x-cropRect.w,cropRect.h);
+    ctx.fillRect(0,cropRect.y+cropRect.h,c.width,c.height-cropRect.y-cropRect.h);
+    // border
+    ctx.strokeStyle='#10B981';ctx.lineWidth=2;
+    ctx.strokeRect(cropRect.x,cropRect.y,cropRect.w,cropRect.h);
+    // corner handles
+    ctx.fillStyle='#10B981';
+    var hs=8;
+    [[cropRect.x,cropRect.y],[cropRect.x+cropRect.w,cropRect.y],[cropRect.x,cropRect.y+cropRect.h],[cropRect.x+cropRect.w,cropRect.y+cropRect.h]].forEach(function(p){
+      ctx.fillRect(p[0]-hs/2,p[1]-hs/2,hs,hs);
+    });
+  }
+}
+
+function cropGetPos(e){
+  var c=document.getElementById('cropCanvas'),r=c.getBoundingClientRect();
+  var touch=e.touches?e.touches[0]:e;
+  return{x:touch.clientX-r.left,y:touch.clientY-r.top};
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  var c=document.getElementById('cropCanvas');
+  function startDrag(e){e.preventDefault();cropDragging=true;var p=cropGetPos(e);cropStart=p;cropRect={x:p.x,y:p.y,w:0,h:0}}
+  function moveDrag(e){if(!cropDragging)return;e.preventDefault();var p=cropGetPos(e);
+    cropRect.w=p.x-cropStart.x;cropRect.h=p.y-cropStart.y;
+    // normalize if dragged backwards
+    var r={x:cropRect.x,y:cropRect.y,w:cropRect.w,h:cropRect.h};
+    if(r.w<0){r.x=cropStart.x+r.w;r.w=-r.w}
+    if(r.h<0){r.y=cropStart.y+r.h;r.h=-r.h}
+    cropRect=r;cropDraw();
+  }
+  function endDrag(){cropDragging=false}
+  c.addEventListener('mousedown',startDrag);c.addEventListener('mousemove',moveDrag);c.addEventListener('mouseup',endDrag);
+  c.addEventListener('touchstart',startDrag,{passive:false});c.addEventListener('touchmove',moveDrag,{passive:false});c.addEventListener('touchend',endDrag);
+});
+
+function cropCancel(){document.getElementById('cropOverlay').classList.remove('open')}
+function cropDone(){
+  if(cropRect.w<10||cropRect.h<10){toast('Drag to select the QR area','error');return}
+  // extract cropped region at original resolution
+  var sx=cropRect.x/cropScale,sy=cropRect.y/cropScale,sw=cropRect.w/cropScale,sh=cropRect.h/cropScale;
+  var oc=document.createElement('canvas');oc.width=Math.round(sw);oc.height=Math.round(sh);
+  var octx=oc.getContext('2d');
+  octx.drawImage(cropImg,sx,sy,sw,sh,0,0,oc.width,oc.height);
+  qrImageData=oc.toDataURL('image/jpeg',0.85);
+  document.getElementById('qrPreviewImg').src=qrImageData;
+  document.getElementById('qrPreviewWrap').style.display='block';
+  document.getElementById('qrPickBtn').style.display='none';
+  document.getElementById('cropOverlay').classList.remove('open');
+  toast('Cropped!','success');
+}
 
 // ─── INIT ───
 document.addEventListener('DOMContentLoaded',function(){
